@@ -12,16 +12,19 @@ Studio import with predictions), and `yolo/` (a rough draft YOLO label set).
 > them), and **delete** false boxes (mesh texture, reflections; or relabel green algae/wood as
 > `matiere_organique`).
 
-## 1. Launch Label Studio (local image serving)
+## 1. Start two servers (two terminals)
 
-Installed at `~/.local/bin/label-studio` (v1.23). From a terminal:
-
+**Terminal A — image server** (serves the photos to Label Studio over HTTP+CORS; reliable):
 ```bash
-export LABEL_STUDIO_LOCAL_FILES_SERVING_ENABLED=true
-export LABEL_STUDIO_LOCAL_FILES_DOCUMENT_ROOT=/Users/holobiomicslab/git/CorSeaCare_yolo/data
-label-studio start
+cd ~/git/CorSeaCare_yolo
+.venv/bin/python scripts/serve_images.py     # http://localhost:8081  (keep it open)
 ```
 
+**Terminal B — Label Studio:**
+```bash
+cd ~/git/CorSeaCare_yolo
+./scripts/launch_label_studio.sh             # http://localhost:8080
+```
 Opens http://localhost:8080 (create a local account on first run — stays on your machine).
 
 ## 2. Create the project
@@ -32,10 +35,10 @@ Opens http://localhost:8080 (create a local account on first run — stays on yo
 ## 3. Import photos + pre-annotations
 
 - **Import** → upload `data/corseacare_preann/ls_tasks.json`.
-- Tasks reference images via `/data/local-files/?d=corseacare/<name>` (resolves thanks to the
-  two `export`s above) and carry the candidate boxes as **predictions** — they appear pre-drawn.
-- If images don't load: re-check the two `export` lines and that the document root is
-  `.../CorSeaCare_yolo/data` (not `.../data/corseacare`).
+- Tasks reference images via `http://localhost:8081/corseacare/<name>` and carry the candidate
+  boxes as **predictions** — they appear pre-drawn.
+- **If images don't load:** make sure Terminal A (`serve_images.py`) is running. Test it:
+  `curl -I http://localhost:8081/corseacare/<one-file>.JPG` should return `200`.
 
 ## 4. Tips
 

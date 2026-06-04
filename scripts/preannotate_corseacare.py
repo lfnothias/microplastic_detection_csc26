@@ -11,10 +11,15 @@ Candidate boxes are STARTING POINTS to correct in Label Studio (classify morphot
 add missed grey/transparent particles, drop organic). Default predicted label: fragment.
 """
 import json
+import os
 import shutil
 from pathlib import Path
 import numpy as np
 import cv2
+
+# How Label Studio tasks reference each image. Default = HTTP via scripts/serve_images.py
+# (most reliable). Override with CORSEACARE_LS_IMG_BASE, e.g. "/data/local-files/?d=corseacare/".
+LS_IMG_BASE = os.environ.get("CORSEACARE_LS_IMG_BASE", "http://localhost:8081/corseacare/")
 
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "data" / "corseacare"
@@ -113,7 +118,7 @@ def main():
                           "rectanglelabels": ["fragment"]},
             })
         tasks.append({
-            "data": {"image": f"/data/local-files/?d=corseacare/{p.name}"},
+            "data": {"image": f"{LS_IMG_BASE}{p.name}"},
             "predictions": [{"model_version": "sat-preann-v1", "result": results}],
         })
 
