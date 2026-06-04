@@ -55,8 +55,43 @@ Two strategies:
 
 See `references.bib` §2–3 and `GITHUB_PROJECTS.md` §1 for sources and code templates.
 
+## Usage
+
+```bash
+# 1. Install the engine (light: no torch). uv provisions Python 3.12.
+uv sync --extra dev
+
+# 2. Run the test suite (Fake backends, no models needed)
+uv run pytest                 # offline: .venv/bin/python -m pytest
+
+# 3. Smoke-run the pipeline with NO models (deterministic Fake backends)
+CORSEACARE_FAKE=1 uv run corseacare count path/to/images --out counts.csv --mm-per-px 0.1
+CORSEACARE_FAKE=1 uv run streamlit run app/server.py
+```
+
+**Calibrate the scale** — sizes are reported in mm, so set `mm_per_px` (in
+`configs/corseacare.yaml` or via `--mm-per-px`) from a physical scale reference in frame.
+
+**Real models (YOLO11 + SAM2)** — these pull in torch (~GB) and are installed separately
+(do this on a good connection / Colab, not at sea):
+
+```bash
+uv pip install "ultralytics>=8.3" "sam-2 @ git+https://github.com/facebookresearch/sam2.git"
+```
+
+**Train the detector** — prepare a dataset with
+`corseacare.data.prepare_deepparticle.build_yolo_dataset`, then run
+`notebooks/train_colab.ipynb` on Colab GPU. Put the resulting weights path in
+`configs/corseacare.yaml`, then run `corseacare predict` / `corseacare count` **without**
+`CORSEACARE_FAKE` for real inference.
+
+> **Status:** the engine, CLI and app are built and unit-tested with Fake backends. The
+> end-to-end PoC run on real weights is pending dataset download + Colab training (deferred
+> until a good connection is available).
+
 ## Next steps
 
+- [ ] Verify the DeepParticle dataset license, prepare it, and train the PoC detector in Colab
 - [ ] Decide imaging modality (RGB macro vs Nile Red fluorescence)
 - [ ] Fix the annotation class list + write a one-page annotation guide
 - [ ] Build a pilot annotated set (~20–50 mixed-scene photos)
