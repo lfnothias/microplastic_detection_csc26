@@ -1,0 +1,13 @@
+<!-- Label Studio labeling config for CorSeaCare microplastic annotation (6 classes).
+     Paste into: Project → Labeling Setup → Custom template. -->
+<View>
+  <Image name="image" value="$image" zoom="true" zoomControl="true" rotateControl="false"/>
+  <RectangleLabels name="label" toName="image">
+    <Label value="fragment" background="#e6194b"/>
+    <Label value="fibre" background="#3cb44b"/>
+    <Label value="film" background="#4363d8"/>
+    <Label value="mousse" background="#f58231"/>
+    <Label value="pellet" background="#911eb4"/>
+    <Label value="matiere_organique" background="#808080"/>
+  </RectangleLabels>
+</View>
