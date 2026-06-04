@@ -1,0 +1,1 @@
+"""CorSeaCare Streamlit application."""

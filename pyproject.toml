@@ -33,6 +33,7 @@ build-backend = "hatchling.build"
 [tool.pytest.ini_options]
 markers = ["integration: needs model downloads / network"]
 addopts = "-m 'not integration'"
+pythonpath = ["."]   # so tests can import the top-level `app` package
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/corseacare"]
