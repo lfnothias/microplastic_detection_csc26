@@ -23,3 +23,6 @@ images/
 
 # scratch
 .repos_raw.json
+
+# working-note specs/plans (kept local)
+docs/superpowers/
