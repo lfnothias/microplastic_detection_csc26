@@ -54,3 +54,24 @@ Opens http://localhost:8080 (create a local account on first run — stays on yo
 2. Point `scripts/train_local.py` `DATA` at a `data.yaml` (6 classes) for that export, then
    `.venv/bin/python scripts/train_local.py` (fine-tunes YOLO11n on MPS).
 3. Run the Streamlit app / CLI with the trained weights on new photos.
+
+## 6. Making the candidate boxes better (optional)
+
+Two pre-annotators exist; they're **complementary** (tested on these photos):
+
+- **Saturation** (`scripts/preannotate_corseacare.py`, the default `ls_tasks.json`) — great for
+  the **coloured** plastic fragments (the majority); misses grey/white/transparent ones.
+- **SAM2 automatic** (`scripts/preannotate_sam2.py` → `data/corseacare_preann_sam2/`) — catches
+  **large and grey/translucent** fragments the colour method misses, but misses small dense
+  particles and is slow on the mesh. Run e.g.:
+  `PYTORCH_ENABLE_MPS_FALLBACK=1 CORSEACARE_SAM2_POINTS=24 .venv/bin/python scripts/preannotate_sam2.py`
+
+**Honest bottom line:** no heuristic nails this textured-mesh scene. The best annotator is the
+**trained model itself** — hand-label a *seed* (a few images, using the candidates as a head
+start), train once (`train_from_label_studio.py`), then let the model pre-annotate the rest and
+just correct it (active-learning loop). Heuristics only reduce the seed effort.
+
+**Claude-vision classification** (`scripts/make_candidate_crops.py` makes numbered crop
+montages): Claude reliably tells **plastic vs organic** (e.g. it flags the green algae filaments
+in the sparse sieves as `matiere_organique`); per-particle *morphotype* from tiny crops is noisy.
+Ask to run it as a workflow over the montages to auto-suggest classes you then confirm.
