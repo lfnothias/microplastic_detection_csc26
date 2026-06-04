@@ -5,15 +5,16 @@ __pycache__/
 venv/
 .ipynb_checkpoints/
 
-# ML artifacts / data (keep the repo light)
-runs/
-weights/
+# ML artifacts / data (keep the repo light) — anchored to repo root so they don't
+# match source package dirs like src/corseacare/data/
+/runs/
+/weights/
 *.pt
 *.onnx
 *.engine
-datasets/
-data/
-images/
+/datasets/
+/data/
+/images/
 *.zip
 
 # OS / editor
