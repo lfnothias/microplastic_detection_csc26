@@ -28,6 +28,11 @@ class CORSHandler(http.server.SimpleHTTPRequestHandler):
 
 if __name__ == "__main__":
     socketserver.TCPServer.allow_reuse_address = True
-    print(f"Serving {ROOT} at http://localhost:{PORT}  (CORS *) — Ctrl+C to stop")
-    with socketserver.TCPServer(("127.0.0.1", PORT), CORSHandler) as httpd:
-        httpd.serve_forever()
+    try:
+        with socketserver.TCPServer(("127.0.0.1", PORT), CORSHandler) as httpd:
+            print(f"Serving {ROOT} at http://localhost:{PORT}  (CORS *) — Ctrl+C to stop")
+            httpd.serve_forever()
+    except OSError as e:
+        print(f"Could not bind port {PORT}: {e}")
+        print(f"A server may already be running on {PORT} — that's fine. Verify with:")
+        print(f"  curl -I http://localhost:{PORT}/corseacare/")
