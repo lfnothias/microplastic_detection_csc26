@@ -64,22 +64,33 @@ def main():
             continue
         items.append((name, _regions_to_lines(regions)))
     items.sort()
-    # sample-aware split (no leakage): hold out whole samples (the 2 with fewest views) for val
-    smap = {}
+    # split: honor an explicit `split` column in samples.csv (train/val); otherwise fall back to
+    # the sample-aware heuristic (hold out the 2 fewest-view samples). Explicit is preferred so
+    # the val set is in-domain (your TAMIS sieves) rather than the foreign MANTA collection.
+    smap, split_col = {}, {}
     mpath = ROOT / "samples.csv"
     if mpath.exists():
         for row in csv.DictReader(open(mpath)):
             smap[row["image"]] = row["sample_id"]
+            s = (row.get("split") or "").strip().lower()
+            if s in ("train", "val"):
+                split_col[row["image"]] = s
     sid = lambda n: smap.get(n, n)
-    by_sample = defaultdict(list)
-    for name, _ in items:
-        by_sample[sid(name)].append(name)
-    val_samples = {s for s, _ in sorted(by_sample.items(), key=lambda kv: (len(kv[1]), kv[0]))[:2]}
+
+    if any(v == "val" for v in split_col.values()):
+        split_of = lambda n: split_col.get(n, "train")          # explicit; unmarked -> train
+    else:
+        by_sample = defaultdict(list)
+        for name, _ in items:
+            by_sample[sid(name)].append(name)
+        val_set = {s for s, _ in sorted(by_sample.items(), key=lambda kv: (len(kv[1]), kv[0]))[:2]}
+        split_of = lambda n: "val" if sid(n) in val_set else "train"
+    val_samples = sorted({sid(n) for n, _ in items if split_of(n) == "val"})
     if OUT.exists():
         shutil.rmtree(OUT)
 
     for name, lines in items:
-        split = "val" if sid(name) in val_samples else "train"
+        split = split_of(name)
         (OUT / "images" / split).mkdir(parents=True, exist_ok=True)
         (OUT / "labels" / split).mkdir(parents=True, exist_ok=True)
         shutil.copy(IMAGES / name, OUT / "images" / split / name)
@@ -91,7 +102,7 @@ def main():
     for _, lines in items:
         for ln in lines:
             hist[CLASSES[int(ln.split()[0])]] += 1
-    n_train = sum(1 for n, _ in items if sid(n) not in val_samples)
+    n_train = sum(1 for n, _ in items if split_of(n) == "train")
     print(f"{len(items)} images, {sum(len(l) for _, l in items)} boxes -> {OUT}")
     print(f"split: {n_train} train / {len(items) - n_train} val images | held-out val samples: {sorted(val_samples)}")
     print("class counts:", dict(hist))

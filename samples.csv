@@ -1,39 +1,39 @@
-image,sample_id,sieve_mm,px_per_mm,date,location,gps,notes
-25275a31-ef27-4f0b-a75f-8b21dc09bc76.JPG,MANTA_25275a31,,,,,,
-2923c4d7-3db9-4be2-8576-9b1baa075fdd.JPG,MANTA_2923c4d7,,,,,,
-4f9a7ac0-cda4-4a9c-a80a-25bc95c93ec1.JPG,MANTA_4f9a7ac0,,,,,,
-6be4c91c-f59c-4d2f-9933-d0a6a23f7f79.JPG,MANTA_6be4c91c,1,,,,,
-88741201-060d-4949-b0de-b820945cd414.JPG,MANTA_88741201,,,,,,
-b57adaf3-ce18-4886-a6ed-0b0254872261.JPG,MANTA_b57adaf3,,,,,,
-df2c4d38-89a8-4763-b650-82ca42363715.JPG,MANTA_df2c4d38,,,,,,
-20260605_151033.jpg,TAMIS_B,1,,2026-06-05,,,"1mm sieve; phone, reshuffled views"
-20260605_151645.jpg,TAMIS_B,1,,2026-06-05,,,"1mm sieve; phone, reshuffled views"
-20260605_151806.jpg,TAMIS_B,1,,2026-06-05,,,"1mm sieve; phone, reshuffled views"
-20260605_152403.jpg,TAMIS_B,1,,2026-06-05,,,"1mm sieve; phone, reshuffled views"
-20260605_152507.jpg,TAMIS_B,1,,2026-06-05,,,"1mm sieve; phone, reshuffled views"
-20260605_152651.jpg,TAMIS_B,1,,2026-06-05,,,"1mm sieve; phone, reshuffled views"
-20260605_152800.jpg,TAMIS_B,1,,2026-06-05,,,"1mm sieve; phone, reshuffled views"
-20260605_152910.jpg,TAMIS_B,1,,2026-06-05,,,"1mm sieve; phone, reshuffled views"
-20260605_153006.jpg,TAMIS_B,1,,2026-06-05,,,"1mm sieve; phone, reshuffled views"
-20260605_153102.jpg,TAMIS_B,1,,2026-06-05,,,"1mm sieve; phone, reshuffled views"
-20260605_153307.jpg,TAMIS_B,1,,2026-06-05,,,"1mm sieve; phone, reshuffled views"
-20260605_181531.jpg,TAMIS_C,2,,2026-06-05,,,2mm sieve; DSLR (IMG_888x) + phone views
-20260605_184257.jpg,TAMIS_C,2,,2026-06-05,,,2mm sieve; DSLR (IMG_888x) + phone views
-20260605_184352.jpg,TAMIS_C,2,,2026-06-05,,,2mm sieve; DSLR (IMG_888x) + phone views
-20260605_184431.jpg,TAMIS_C,2,,2026-06-05,,,2mm sieve; DSLR (IMG_888x) + phone views
-20260605_184543.jpg,TAMIS_C,2,,2026-06-05,,,2mm sieve; DSLR (IMG_888x) + phone views
-IMG_8886.jpg,TAMIS_C,2,,2026-06-05,,,2mm sieve; DSLR (IMG_888x) + phone views
-IMG_8887.jpg,TAMIS_C,2,,2026-06-05,,,2mm sieve; DSLR (IMG_888x) + phone views
-IMG_8888.jpg,TAMIS_C,2,,2026-06-05,,,2mm sieve; DSLR (IMG_888x) + phone views
-IMG_8889.jpg,TAMIS_C,2,,2026-06-05,,,2mm sieve; DSLR (IMG_888x) + phone views
-IMG_8890.jpg,TAMIS_C,2,,2026-06-05,,,2mm sieve; DSLR (IMG_888x) + phone views
-IMG_8891.jpg,TAMIS_C,2,,2026-06-05,,,2mm sieve; DSLR (IMG_888x) + phone views; ANNOTATION TARGET
-20260605_175434.jpg,TAMIS_D,1,,2026-06-05,,,1mm sieve; single phone view
-20260605_145720.jpg,TAMIS_DSLR,1,,2026-06-05,,,1mm sieve; DSLR (DT5A) + phone (1457xx) views
-20260605_145810.jpg,TAMIS_DSLR,1,,2026-06-05,,,1mm sieve; DSLR (DT5A) + phone (1457xx) views
-20260605_145851.jpg,TAMIS_DSLR,1,,2026-06-05,,,1mm sieve; DSLR (DT5A) + phone (1457xx) views
-DT5A0149.JPG,TAMIS_DSLR,1,,2026-06-05,,,1mm sieve; DSLR (DT5A) + phone (1457xx) views
-DT5A0150.JPG,TAMIS_DSLR,1,,2026-06-05,,,1mm sieve; DSLR (DT5A) + phone (1457xx) views
-DT5A0151.JPG,TAMIS_DSLR,1,,2026-06-05,,,1mm sieve; DSLR (DT5A) + phone (1457xx) views
-DT5A0152.JPG,TAMIS_DSLR,1,,2026-06-05,,,1mm sieve; DSLR (DT5A) + phone (1457xx) views
-f883a2df-26df-4b31-b5c9-fa782f28e4bc.JPG,TAMIS_DSLR,1,,2026-06-05,,,same TAMIS_DSLR sieve (per user); Finder tag was Green=2mm but set 1mm to match sieve — VERIFY
+image,sample_id,split,sieve_mm,px_per_mm,date,location,gps,notes
+25275a31-ef27-4f0b-a75f-8b21dc09bc76.JPG,MANTA_25275a31,train,,,,,,
+2923c4d7-3db9-4be2-8576-9b1baa075fdd.JPG,MANTA_2923c4d7,train,,,,,,
+4f9a7ac0-cda4-4a9c-a80a-25bc95c93ec1.JPG,MANTA_4f9a7ac0,train,,,,,,
+6be4c91c-f59c-4d2f-9933-d0a6a23f7f79.JPG,MANTA_6be4c91c,train,1,,,,,
+88741201-060d-4949-b0de-b820945cd414.JPG,MANTA_88741201,train,,,,,,
+b57adaf3-ce18-4886-a6ed-0b0254872261.JPG,MANTA_b57adaf3,train,,,,,,
+df2c4d38-89a8-4763-b650-82ca42363715.JPG,MANTA_df2c4d38,train,,,,,,
+20260605_151033.jpg,TAMIS_B,train,1,,2026-06-05,,,"1mm sieve; phone, reshuffled views"
+20260605_151645.jpg,TAMIS_B,train,1,,2026-06-05,,,"1mm sieve; phone, reshuffled views"
+20260605_151806.jpg,TAMIS_B,train,1,,2026-06-05,,,"1mm sieve; phone, reshuffled views"
+20260605_152403.jpg,TAMIS_B,train,1,,2026-06-05,,,"1mm sieve; phone, reshuffled views"
+20260605_152507.jpg,TAMIS_B,train,1,,2026-06-05,,,"1mm sieve; phone, reshuffled views"
+20260605_152651.jpg,TAMIS_B,train,1,,2026-06-05,,,"1mm sieve; phone, reshuffled views"
+20260605_152800.jpg,TAMIS_B,train,1,,2026-06-05,,,"1mm sieve; phone, reshuffled views"
+20260605_152910.jpg,TAMIS_B,train,1,,2026-06-05,,,"1mm sieve; phone, reshuffled views"
+20260605_153006.jpg,TAMIS_B,train,1,,2026-06-05,,,"1mm sieve; phone, reshuffled views"
+20260605_153102.jpg,TAMIS_B,train,1,,2026-06-05,,,"1mm sieve; phone, reshuffled views"
+20260605_153307.jpg,TAMIS_B,train,1,,2026-06-05,,,"1mm sieve; phone, reshuffled views"
+20260605_181531.jpg,TAMIS_C,train,2,,2026-06-05,,,2mm sieve; DSLR (IMG_888x) + phone views
+20260605_184257.jpg,TAMIS_C,train,2,,2026-06-05,,,2mm sieve; DSLR (IMG_888x) + phone views
+20260605_184352.jpg,TAMIS_C,train,2,,2026-06-05,,,2mm sieve; DSLR (IMG_888x) + phone views
+20260605_184431.jpg,TAMIS_C,train,2,,2026-06-05,,,2mm sieve; DSLR (IMG_888x) + phone views
+20260605_184543.jpg,TAMIS_C,train,2,,2026-06-05,,,2mm sieve; DSLR (IMG_888x) + phone views
+IMG_8886.jpg,TAMIS_C,train,2,,2026-06-05,,,2mm sieve; DSLR (IMG_888x) + phone views
+IMG_8887.jpg,TAMIS_C,train,2,,2026-06-05,,,2mm sieve; DSLR (IMG_888x) + phone views
+IMG_8888.jpg,TAMIS_C,train,2,,2026-06-05,,,2mm sieve; DSLR (IMG_888x) + phone views
+IMG_8889.jpg,TAMIS_C,train,2,,2026-06-05,,,2mm sieve; DSLR (IMG_888x) + phone views
+IMG_8890.jpg,TAMIS_C,train,2,,2026-06-05,,,2mm sieve; DSLR (IMG_888x) + phone views
+IMG_8891.jpg,TAMIS_C,train,2,,2026-06-05,,,2mm sieve; DSLR (IMG_888x) + phone views; ANNOTATION TARGET
+20260605_175434.jpg,TAMIS_D,train,1,,2026-06-05,,,1mm sieve; single phone view
+20260605_145720.jpg,TAMIS_DSLR,val,1,,2026-06-05,,,1mm sieve; DSLR (DT5A) + phone (1457xx) views
+20260605_145810.jpg,TAMIS_DSLR,val,1,,2026-06-05,,,1mm sieve; DSLR (DT5A) + phone (1457xx) views
+20260605_145851.jpg,TAMIS_DSLR,val,1,,2026-06-05,,,1mm sieve; DSLR (DT5A) + phone (1457xx) views
+DT5A0149.JPG,TAMIS_DSLR,val,1,,2026-06-05,,,1mm sieve; DSLR (DT5A) + phone (1457xx) views
+DT5A0150.JPG,TAMIS_DSLR,val,1,,2026-06-05,,,1mm sieve; DSLR (DT5A) + phone (1457xx) views
+DT5A0151.JPG,TAMIS_DSLR,val,1,,2026-06-05,,,1mm sieve; DSLR (DT5A) + phone (1457xx) views
+DT5A0152.JPG,TAMIS_DSLR,val,1,,2026-06-05,,,1mm sieve; DSLR (DT5A) + phone (1457xx) views
+f883a2df-26df-4b31-b5c9-fa782f28e4bc.JPG,TAMIS_DSLR,val,1,,2026-06-05,,,same TAMIS_DSLR sieve (per user); Finder tag was Green=2mm but set 1mm to match sieve — VERIFY
