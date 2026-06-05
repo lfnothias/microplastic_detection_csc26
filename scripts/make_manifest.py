@@ -13,7 +13,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 IMAGES = ROOT / "data" / "corseacare"
 MANIFEST = ROOT / "samples.csv"
-FIELDS = ["image", "sample_id", "sieve_mm", "date", "location", "gps", "notes"]
+FIELDS = ["image", "sample_id", "sieve_mm", "px_per_mm", "date", "location", "gps", "notes"]
 
 
 def guess(name):
@@ -42,8 +42,8 @@ def main():
             rows.append(existing[name])
         else:
             sid, date = guess(name)
-            rows.append({"image": name, "sample_id": sid, "date": date,
-                         "location": "", "gps": "", "notes": ""})
+            rows.append({"image": name, "sample_id": sid, "sieve_mm": "", "px_per_mm": "",
+                         "date": date, "location": "", "gps": "", "notes": ""})
             added += 1
     rows.sort(key=lambda r: (r["sample_id"], r["image"]))
     with open(MANIFEST, "w", newline="") as f:
