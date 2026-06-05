@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 import yaml
 
-DEFAULT_CLASSES = ["fragment", "fibre", "film", "mousse", "pellet", "matiere_organique"]
+DEFAULT_CLASSES = ["fragment", "fibre", "film", "mousse", "pellet", "autre"]
 
 
 @dataclass

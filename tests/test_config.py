@@ -3,8 +3,13 @@ from corseacare.config import load_config, Config
 
 def test_default_classes_include_organic():
     cfg = Config()
-    assert "matiere_organique" in cfg.classes
+    assert "autre" in cfg.classes
     assert cfg.classes[0] == "fragment"
+
+
+def test_sixth_class_is_autre():
+    from corseacare.config import Config
+    assert Config().classes == ["fragment", "fibre", "film", "mousse", "pellet", "autre"]
 
 
 def test_load_config_overrides(tmp_path):

@@ -8,6 +8,6 @@
     <Label value="film" background="#4363d8"/>
     <Label value="mousse" background="#f58231"/>
     <Label value="pellet" background="#911eb4"/>
-    <Label value="matiere_organique" background="#808080"/>
+    <Label value="autre" background="#808080"/>
   </RectangleLabels>
 </View>

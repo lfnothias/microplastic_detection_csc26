@@ -1,4 +1,4 @@
-classes: [fragment, fibre, film, mousse, pellet, matiere_organique]
+classes: [fragment, fibre, film, mousse, pellet, autre]
 mm_per_px: 0.1          # CALIBRATE: physical scale reference in frame
 weights: yolo11n.pt
 sam2_checkpoint: sam2_hiera_tiny.pt
