@@ -75,3 +75,11 @@ just correct it (active-learning loop). Heuristics only reduce the seed effort.
 montages): Claude reliably tells **plastic vs organic** (e.g. it flags the green algae filaments
 in the sparse sieves as `matiere_organique`); per-particle *morphotype* from tiny crops is noisy.
 Ask to run it as a workflow over the montages to auto-suggest classes you then confirm.
+
+## Claude few-shot classification (optional accelerator)
+
+Build the reference guide (`scripts/build_reference_guide.py <examples_dir> guide.png`) and candidate
+montages (`scripts/make_candidate_crops.py`), then run the workflow `scripts/classify_fewshot.workflow.js`
+(say "workflow" to authorize it) with `args = {guide, montages:[...]}`. Map the returned per-box classes
+back into `ls_tasks.json` with `corseacare.ls_merge.apply_class_suggestions`, re-import in Label Studio,
+and **validate least-confident-first**. Morphotype suggestions are hints; plastic-vs-organic is reliable.
