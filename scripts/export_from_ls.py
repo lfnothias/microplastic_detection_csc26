@@ -28,7 +28,10 @@ def _regions_to_lines(regions):
         if r.get("type") != "rectanglelabels":
             continue
         v = r["value"]
-        lab = ALIAS.get(v["rectanglelabels"][0], v["rectanglelabels"][0])
+        labs = v.get("rectanglelabels") or []
+        if not labs:
+            continue                       # box drawn without a class assigned — skip
+        lab = ALIAS.get(labs[0], labs[0])
         if lab not in CLASSES:
             print(f"  WARN unknown label '{lab}' skipped")
             continue
