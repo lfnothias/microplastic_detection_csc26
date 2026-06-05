@@ -72,7 +72,12 @@ uv run python scripts/export_from_ls.py   # Label Studio -> YOLO dataset (split 
 uv run python scripts/tile_dataset.py     # slice into tiles
 uv run python scripts/train_tiles.py      # train YOLO11n on the tiles (MPS, early-stops)
 uv run python scripts/predict_tiled.py    # tiled inference (sieve-ROI gated) -> overlays + counts
-uv run corseacare report --particles counts.csv   # per-sample summary (see Outputs)
+
+# sizes in mm: calibrate the mesh ruler ONCE (needs data/mesh_refs.csv), then it flows automatically
+uv run python scripts/calibrate_mesh.py calibrate   # -> mesh_calibration.json (pitch per mesh)
+uv run python scripts/calibrate_mesh.py apply       # -> px_per_mm column in samples.csv
+uv run corseacare count data/corseacare --out counts.csv   # detect+segment+measure (per-photo mm/px)
+uv run corseacare report --particles counts.csv            # per-sample summary (see Outputs)
 ```
 
 ## Outputs
