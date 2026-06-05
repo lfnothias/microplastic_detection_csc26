@@ -98,6 +98,24 @@ summed** — the representative (median-count) view is summarised (override with
 Size/colour require the segmentation pipeline (`corseacare count`); a detection-only CSV yields
 class counts only. Polymer type is **not** inferred (needs FTIR/Raman).
 
+## Vision-assisted (re-)annotation
+
+Annotation is never complete — small particles get missed. Two model-assisted loops close the
+gap (foundation models *propose*, you *review* in Label Studio):
+
+- **Fresh pre-annotation:** `preannotate_corseacare.py` (candidate boxes) →
+  `make_candidate_crops.py` (numbered montages) → a vision model classifies each crop →
+  `ls_merge.py` writes class suggestions back into Label Studio.
+- **Re-annotation of missed particles:** `extract_fp.py` takes a trained model's *false
+  positives* on a held-out sieve (many are real un-boxed particles), crops them into montages;
+  a vision model judges each (real particle + class, or noise); `make_reannot_import.py` emits a
+  Label Studio import of the confirmed boxes to add to the annotation.
+
+On `TAMIS_B` this recovered **109 missed particles (74 % of the model's "false positives")**,
+revising the annotation 214 → 323 boxes and the model's real precision from 47 % to ~86 %.
+Evaluation tooling: `eval_binary.py` (plastic vs organic), `view_consistency.py` (inter-view
+reproducibility). Full results: **[docs/RESULTS.md](docs/RESULTS.md)**.
+
 ## Data & privacy
 
 Your **photos, annotations, weights and datasets live under `data/` (and `runs/`) and are
