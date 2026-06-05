@@ -1,12 +1,25 @@
 [project]
 name = "corseacare"
 version = "0.1.0"
-description = "Counting marine plastic particles in RGB photos (CorSeaCare)."
+description = "Detect, count, and characterise marine plastic particles in photos of sieve samples (CorSeaCare citizen science)."
+readme = "README.md"
 requires-python = ">=3.12"
+license = "AGPL-3.0-or-later"
+authors = [{ name = "Louis-Félix Nothias", email = "louisfelix.nothias@gmail.com" }]
+keywords = ["marine litter", "microplastics", "citizen science", "object detection", "YOLO", "computer vision", "ocean"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Image Recognition",
+    "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: MacOS",
+]
 dependencies = [
     "numpy>=1.26",
     "opencv-python-headless>=4.9",
     "scikit-image>=0.23",
+    "scikit-learn>=1.4",
     "pandas>=2.2",
     "pillow>=10.0",
     "pyyaml>=6.0",
@@ -16,6 +29,11 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0", "pytest-cov>=5.0"]
+
+[project.urls]
+Homepage = "https://github.com/HolobiomicsLab/CorSeaCare_yolo"
+Repository = "https://github.com/HolobiomicsLab/CorSeaCare_yolo"
+Issues = "https://github.com/HolobiomicsLab/CorSeaCare_yolo/issues"
 
 # Real-model backends are intentionally NOT declared here: they pull in torch (~GB) and
 # SAM2 ships on GitHub under the package name `sam-2`. The Fake backends let the whole

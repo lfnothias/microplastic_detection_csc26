@@ -34,7 +34,7 @@ and **colour**. It runs **locally on a Mac** (Apple Silicon / MPS) and is built 
 **Prerequisites:** [`uv`](https://docs.astral.sh/uv/) (`brew install uv`), `git`.
 
 ```bash
-git clone https://github.com/<your-org>/CorSeaCare_yolo.git
+git clone https://github.com/HolobiomicsLab/CorSeaCare_yolo.git
 cd CorSeaCare_yolo
 ./scripts/setup.sh          # installs the engine (no torch) + Label Studio
 ```

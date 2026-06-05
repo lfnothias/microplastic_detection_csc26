@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "CorSeaCare_yolo: detecting, counting and characterising marine plastic particles in sieve photos"
+abstract: >-
+  An open, local (Apple-Silicon) computer-vision tool to detect, count, classify and
+  measure marine plastic particles in photographs of Manta-net sieve samples, built around
+  a human-in-the-loop annotation workflow for the CorSeaCare citizen-science expedition.
+type: software
+authors:
+  - given-names: Louis-Félix
+    family-names: Nothias
+    email: louisfelix.nothias@gmail.com
+# Add yourself here when you contribute (name, optional affiliation/orcid).
+version: 0.1.0
+license: AGPL-3.0-or-later
+repository-code: "https://github.com/HolobiomicsLab/CorSeaCare_yolo"
+keywords:
+  - marine litter
+  - microplastics
+  - citizen science
+  - object detection
+  - computer vision
