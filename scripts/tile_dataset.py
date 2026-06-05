@@ -7,6 +7,7 @@ Keeps every tile that contains a box, plus a fraction of empty tiles as negative
 Output: data/ls_tiles_yolo/{images,labels}/{train,val} + data.yaml.
 """
 import random
+import shutil
 from pathlib import Path
 import numpy as np
 import cv2
@@ -33,6 +34,8 @@ def load_boxes(txt):
 
 def main():
     rng = random.Random(0)
+    if OUT.exists():
+        shutil.rmtree(OUT)        # critical: stale tiles from a prior split would leak across train/val
     for split in ("train", "val"):
         (OUT / "images" / split).mkdir(parents=True, exist_ok=True)
         (OUT / "labels" / split).mkdir(parents=True, exist_ok=True)
