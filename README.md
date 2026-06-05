@@ -76,8 +76,8 @@ uv run python scripts/predict_tiled.py    # tiled inference (sieve-ROI gated) ->
 # sizes in mm: calibrate the mesh ruler ONCE (needs data/mesh_refs.csv), then it flows automatically
 uv run python scripts/calibrate_mesh.py calibrate   # -> mesh_calibration.json (pitch per mesh)
 uv run python scripts/calibrate_mesh.py apply       # -> px_per_mm column in samples.csv
-uv run corseacare count data/corseacare --out counts.csv   # detect+segment+measure (per-photo mm/px)
-uv run corseacare report --particles counts.csv            # per-sample summary (see Outputs)
+uv run corseacare count data/corseacare --out counts.csv --tiled   # tiled detect+segment+measure (per-photo mm/px)
+uv run corseacare report --particles counts.csv                    # per-sample summary (see Outputs)
 ```
 
 ## Outputs
