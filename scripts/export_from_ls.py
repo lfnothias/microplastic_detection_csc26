@@ -9,8 +9,9 @@ present, falling back to the latest draft per task.
 """
 import sqlite3
 import json
+import csv
 import shutil
-from collections import Counter
+from collections import Counter, defaultdict
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -60,10 +61,22 @@ def main():
             continue
         items.append((name, _regions_to_lines(regions)))
     items.sort()
-    n_val = min(2, len(items) - 1) if len(items) > 2 else 1
+    # sample-aware split (no leakage): hold out whole samples (the 2 with fewest views) for val
+    smap = {}
+    mpath = ROOT / "samples.csv"
+    if mpath.exists():
+        for row in csv.DictReader(open(mpath)):
+            smap[row["image"]] = row["sample_id"]
+    sid = lambda n: smap.get(n, n)
+    by_sample = defaultdict(list)
+    for name, _ in items:
+        by_sample[sid(name)].append(name)
+    val_samples = {s for s, _ in sorted(by_sample.items(), key=lambda kv: (len(kv[1]), kv[0]))[:2]}
+    if OUT.exists():
+        shutil.rmtree(OUT)
 
-    for i, (name, lines) in enumerate(items):
-        split = "val" if i < n_val else "train"
+    for name, lines in items:
+        split = "val" if sid(name) in val_samples else "train"
         (OUT / "images" / split).mkdir(parents=True, exist_ok=True)
         (OUT / "labels" / split).mkdir(parents=True, exist_ok=True)
         shutil.copy(IMAGES / name, OUT / "images" / split / name)
@@ -75,7 +88,9 @@ def main():
     for _, lines in items:
         for ln in lines:
             hist[CLASSES[int(ln.split()[0])]] += 1
-    print(f"{len(items)} images, {sum(len(l) for _, l in items)} boxes -> {OUT} ({n_val} val)")
+    n_train = sum(1 for n, _ in items if sid(n) not in val_samples)
+    print(f"{len(items)} images, {sum(len(l) for _, l in items)} boxes -> {OUT}")
+    print(f"split: {n_train} train / {len(items) - n_train} val images | held-out val samples: {sorted(val_samples)}")
     print("class counts:", dict(hist))
 
 
