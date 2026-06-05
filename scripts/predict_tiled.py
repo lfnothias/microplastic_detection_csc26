@@ -12,11 +12,13 @@ import cv2
 
 from corseacare.config import Config
 from corseacare.tiling import tile_origins, offset_boxes_from_tile, nms
+from corseacare.sieve import detect_sieve_circle, keep_inside_circle
 
 ROOT = Path(__file__).resolve().parents[1]
 IMAGES = ROOT / "data" / "corseacare"
 OUT = ROOT / "data" / "corseacare_pred_tiled"
 TILE, OVERLAP = 640, 0.3
+ROI_MARGIN = 0.98     # keep detections within 98% of the sieve radius
 COLORS = [(0, 0, 255), (0, 255, 0), (255, 0, 0), (0, 165, 255), (255, 0, 255), (160, 160, 160)]
 
 
@@ -26,7 +28,9 @@ def main(weights, conf):
     model = YOLO(weights)
     (OUT / "overlays").mkdir(parents=True, exist_ok=True)
     rows, per_class = [], Counter()
-    for p in sorted(glob.glob(str(IMAGES / "*.JPG"))):
+    exts = ("*.JPG", "*.jpg", "*.jpeg", "*.JPEG", "*.png", "*.PNG")
+    paths = sorted({p for e in exts for p in glob.glob(str(IMAGES / e))})
+    for p in paths:
         img = cv2.imread(p)
         H, W = img.shape[:2]
         dets = []
@@ -40,7 +44,12 @@ def main(weights, conf):
                   for b in res.boxes]
             dets += offset_boxes_from_tile(td, x0, y0)
         merged = nms(dets, iou_thr=0.5)
+        circle = detect_sieve_circle(img)              # gate out rim / table / tool false positives
+        n_raw = len(merged)
+        merged = keep_inside_circle(merged, circle, margin=ROI_MARGIN)
         ov = img.copy()
+        cx, cy, r = (int(v) for v in circle)
+        cv2.circle(ov, (cx, cy), r, (0, 255, 255), 2)  # show the ROI we kept
         for (cls, cf, x1, y1, x2, y2) in merged:
             name = cfg.classes[cls] if cls < len(cfg.classes) else str(cls)
             cv2.rectangle(ov, (int(x1), int(y1)), (int(x2), int(y2)), COLORS[cls % len(COLORS)], 3)
@@ -49,7 +58,7 @@ def main(weights, conf):
                          "x1": int(x1), "y1": int(y1), "x2": int(x2), "y2": int(y2)})
         s = 1400 / max(H, W)
         cv2.imwrite(str(OUT / "overlays" / Path(p).name), cv2.resize(ov, (int(W * s), int(H * s))))
-        print(f"{Path(p).name}: {len(merged)} particles")
+        print(f"{Path(p).name}: {len(merged)} particles ({n_raw - len(merged)} dropped outside sieve)")
     import pandas as pd
     pd.DataFrame(rows).to_csv(OUT / "counts.csv", index=False)
     print("per-class totals:", dict(per_class))
