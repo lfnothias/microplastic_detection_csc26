@@ -13,7 +13,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 IMAGES = ROOT / "data" / "corseacare"
 MANIFEST = ROOT / "samples.csv"
-FIELDS = ["image", "sample_id", "date", "location", "gps", "notes"]
+FIELDS = ["image", "sample_id", "sieve_mm", "date", "location", "gps", "notes"]
 
 
 def guess(name):
