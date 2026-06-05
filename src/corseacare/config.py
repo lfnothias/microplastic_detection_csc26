@@ -13,6 +13,9 @@ class Config:
     sam2_checkpoint: str = "sam2_hiera_tiny.pt"
     sam2_model_cfg: str = "sam2_hiera_t.yaml"
     conf_threshold: float = 0.25
+    tile_size: int = 640              # tiled detection (SAHI) — for tiny particles in big photos
+    tile_overlap: float = 0.3
+    roi_gate: bool = True             # drop detections outside the sieve circle
 
 
 def load_config(path: str | Path) -> Config:

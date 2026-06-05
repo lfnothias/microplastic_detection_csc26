@@ -1,4 +1,21 @@
-from corseacare.tiling import tile_origins, remap_boxes_to_tile, offset_boxes_from_tile, nms
+import numpy as np
+from corseacare.tiling import (tile_origins, remap_boxes_to_tile, offset_boxes_from_tile, nms,
+                               tiled_detect)
+
+
+def test_tiled_detect_offsets_and_merges():
+    img = np.zeros((40, 40, 3), np.uint8)
+    merged = tiled_detect(img, lambda t: [(0, 0.9, 5, 5, 10, 10)], tile=20, overlap=0.0, iou=0.5)
+    assert len(merged) == 4                       # one box per tile, non-overlapping
+    centres = {(round((b[2] + b[4]) / 2, 1), round((b[3] + b[5]) / 2, 1)) for b in merged}
+    assert centres == {(7.5, 7.5), (27.5, 7.5), (7.5, 27.5), (27.5, 27.5)}
+
+
+def test_tiled_detect_pads_small_image_to_tile():
+    img = np.zeros((15, 15, 3), np.uint8)         # smaller than tile -> must be padded
+    sizes = []
+    tiled_detect(img, lambda t: (sizes.append(t.shape[:2]) or []), tile=20, overlap=0.0)
+    assert sizes == [(20, 20)]
 
 
 def test_tile_origins_cover_edges():

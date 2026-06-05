@@ -18,11 +18,12 @@ def _cfg(config: str, mm_per_px: float) -> Config:
 
 
 @app.command()
-def predict(image: str, out: str = "overlay.png", config: str = "", mm_per_px: float = 0.1):
+def predict(image: str, out: str = "overlay.png", config: str = "", mm_per_px: float = 0.1,
+            tiled: bool = False):
     """Run on a single image, save an overlay and print the count."""
     from corseacare.viz import draw_overlay
     cfg = _cfg(config, mm_per_px)
-    pipe = build_pipeline(cfg, mm_per_px)
+    pipe = build_pipeline(cfg, mm_per_px, tiled=tiled)
     img = cv2.imread(image)
     r = pipe.run(img)
     cv2.imwrite(out, draw_overlay(img, r["detections"], r["masks"]))
@@ -31,7 +32,7 @@ def predict(image: str, out: str = "overlay.png", config: str = "", mm_per_px: f
 
 @app.command()
 def count(folder: str, out: str = "counts.csv", config: str = "", mm_per_px: float = 0.1,
-          manifest: str = "samples.csv"):
+          manifest: str = "samples.csv", tiled: bool = False):
     """Batch-process a folder, write per-particle CSV with sample metadata columns.
 
     Per-photo scale: if `manifest` has a calibrated `px_per_mm` for an image (from
@@ -40,7 +41,7 @@ def count(folder: str, out: str = "counts.csv", config: str = "", mm_per_px: flo
     """
     from corseacare.calib import load_mm_per_px_map
     cfg = _cfg(config, mm_per_px)
-    pipe = build_pipeline(cfg, mm_per_px)
+    pipe = build_pipeline(cfg, mm_per_px, tiled=tiled)
     scale_map = load_mm_per_px_map(manifest)
     rows, n_cal = [], 0
     for p in sorted(Path(folder).glob("*")):

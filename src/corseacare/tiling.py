@@ -62,3 +62,23 @@ def nms(dets, iou_thr=0.5):
         if all(_iou(d[2:], k[2:]) < iou_thr for k in kept):
             kept.append(d)
     return kept
+
+
+def tiled_detect(image_bgr, detect_tile, tile=640, overlap=0.3, iou=0.5):
+    """Slice an image into overlapping tiles, detect on each, merge to full-image coords.
+
+    `detect_tile(tile_bgr) -> [(cls, conf, x1, y1, x2, y2)]` in tile pixels. Each tile is padded
+    to `tile`x`tile` before the call. Boxes are offset back to full-image coordinates and merged
+    with class-agnostic NMS. Pure orchestration over tile_origins / offset_boxes_from_tile / nms.
+    """
+    H, W = image_bgr.shape[:2]
+    dets = []
+    for (x0, y0) in tile_origins(W, H, tile, overlap):
+        t = image_bgr[y0:y0 + tile, x0:x0 + tile]
+        th, tw = t.shape[:2]
+        if th < tile or tw < tile:
+            pad = np.zeros((tile, tile) + image_bgr.shape[2:], image_bgr.dtype)
+            pad[:th, :tw] = t
+            t = pad
+        dets += offset_boxes_from_tile(detect_tile(t), x0, y0)
+    return nms(dets, iou_thr=iou)
