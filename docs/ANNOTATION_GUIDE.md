@@ -7,10 +7,10 @@ coloured particles so you correct rather than draw from scratch. Its outputs are
 Studio import with predictions), and `yolo/` (a rough draft YOLO label set).
 
 > The candidate boxes are *starting points*, all tentatively labelled `fragment`. Per box:
-> **fix the class** (fragment / fibre / film / mousse / pellet / `matiere_organique`), adjust
+> **fix the class** (fragment / fibre / film / mousse / pellet / `autre`), adjust
 > the box, **add** missed grey/white/transparent particles (colour-based detection can't see
 > them), and **delete** false boxes (mesh texture, reflections; or relabel green algae/wood as
-> `matiere_organique`).
+> `autre`).
 
 ## 1. Start two servers (two terminals)
 
@@ -45,7 +45,7 @@ Opens http://localhost:8080 (create a local account on first run — stays on yo
 - **Scale:** these 15 photos have no ruler, so sizes are in pixels until calibrated. Add a
   scale reference to future photos to get mm.
 - **Colour is automatic** — don't encode it; the pipeline computes it from the mask.
-- Keep `matiere_organique` on green filaments / wood — it teaches the model to reject organics.
+- Keep `autre` on green filaments / wood — it teaches the model to reject organics.
 - Start with the dense colourful sieves (best return on effort).
 
 ## 5. Export → train on the M4
@@ -73,7 +73,7 @@ just correct it (active-learning loop). Heuristics only reduce the seed effort.
 
 **Claude-vision classification** (`scripts/make_candidate_crops.py` makes numbered crop
 montages): Claude reliably tells **plastic vs organic** (e.g. it flags the green algae filaments
-in the sparse sieves as `matiere_organique`); per-particle *morphotype* from tiny crops is noisy.
+in the sparse sieves as `autre`); per-particle *morphotype* from tiny crops is noisy.
 Ask to run it as a workflow over the montages to auto-suggest classes you then confirm.
 
 ## Claude few-shot classification (optional accelerator)
