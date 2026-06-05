@@ -70,9 +70,28 @@ Train from your annotations and run the model:
 ```bash
 uv run python scripts/export_from_ls.py   # Label Studio -> YOLO dataset (split by sample)
 uv run python scripts/tile_dataset.py     # slice into tiles
-# ... train on the tiles (see ANNOTATION_GUIDE), then:
-uv run python scripts/predict_tiled.py    # tiled inference -> overlays + counts
+uv run python scripts/train_tiles.py      # train YOLO11n on the tiles (MPS, early-stops)
+uv run python scripts/predict_tiled.py    # tiled inference (sieve-ROI gated) -> overlays + counts
+uv run corseacare report --particles counts.csv   # per-sample summary (see Outputs)
 ```
+
+## Outputs
+
+`corseacare report` aggregates the per-particle CSV into a **per-sample** summary
+(`report.json` + a flat `report_by_sample.csv`):
+
+- **counts per class** (`fragment`/`fibre`/`film`/`mousse`/`pellet`/`autre`) and **per colour**;
+- **size** — mean/median max-Feret (mm) and a **size-class histogram** (`<1`, `1–2`, `2–5`,
+  `5–10`, `>10` mm, aligned with the 1 mm/2 mm sieve fractions);
+- **projected area** (mm², total and per class) — the robust 2-D quantity;
+- a **volume estimate** (mm³) clearly labelled as an estimate with its shape assumption — a 2-D
+  photo cannot measure true volume;
+- **concentration** (particles/m³) when a tow volume is supplied (`--tow-volume-m3`).
+
+Multiple photos of one sieve are reshuffled views of the *same* material, so they are **not
+summed** — the representative (median-count) view is summarised (override with `--sum-views`).
+Size/colour require the segmentation pipeline (`corseacare count`); a detection-only CSV yields
+class counts only. Polymer type is **not** inferred (needs FTIR/Raman).
 
 ## Data & privacy
 
