@@ -46,6 +46,31 @@ def detect_mesh_period(gray, min_px=5.0, max_px=80.0):
     return peak_period, float(F.flat[idx] / med)
 
 
+def load_mm_per_px_map(manifest_path):
+    """Map image filename -> mm_per_px from a samples.csv `px_per_mm` column.
+
+    Blank / non-positive / unparseable entries are skipped, so the caller can fall back to a
+    global scale for photos that aren't mesh-calibrated yet. Missing file -> empty map.
+    """
+    import csv
+    from pathlib import Path
+    out = {}
+    p = Path(manifest_path)
+    if not p.exists():
+        return out
+    for row in csv.DictReader(open(p)):
+        raw = (row.get("px_per_mm") or "").strip()
+        if not raw:
+            continue
+        try:
+            ppm = float(raw)
+        except ValueError:
+            continue
+        if ppm > 0:
+            out[row["image"]] = 1.0 / ppm
+    return out
+
+
 def solve_pitch_mm(period_px, px_per_mm):
     """True mesh pitch in mm from an observed period (px) and a ruler-derived px/mm."""
     if px_per_mm <= 0:

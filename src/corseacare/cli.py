@@ -30,21 +30,33 @@ def predict(image: str, out: str = "overlay.png", config: str = "", mm_per_px: f
 
 
 @app.command()
-def count(folder: str, out: str = "counts.csv", config: str = "", mm_per_px: float = 0.1):
-    """Batch-process a folder, write per-particle CSV with sample metadata columns."""
+def count(folder: str, out: str = "counts.csv", config: str = "", mm_per_px: float = 0.1,
+          manifest: str = "samples.csv"):
+    """Batch-process a folder, write per-particle CSV with sample metadata columns.
+
+    Per-photo scale: if `manifest` has a calibrated `px_per_mm` for an image (from
+    `calibrate_mesh.py`), that photo is measured at its own mm/px; otherwise the global
+    `--mm-per-px` is used. Calibrated photos are reported in mm; the rest fall back.
+    """
+    from corseacare.calib import load_mm_per_px_map
     cfg = _cfg(config, mm_per_px)
     pipe = build_pipeline(cfg, mm_per_px)
-    rows = []
+    scale_map = load_mm_per_px_map(manifest)
+    rows, n_cal = [], 0
     for p in sorted(Path(folder).glob("*")):
         if p.suffix.lower() not in {".png", ".jpg", ".jpeg"}:
             continue
         img = cv2.imread(str(p))
-        r = pipe.run(img)
+        per_img = scale_map.get(p.name)
+        if per_img is not None:
+            n_cal += 1
+        r = pipe.run(img, mm_per_px=per_img)        # None -> pipeline's global scale
         for rec in r["records"]:
             rec["image"] = p.name
             rows.append(rec)
     pd.DataFrame(rows).to_csv(out, index=False)
-    typer.echo(f"wrote {len(rows)} particles to {out}")
+    typer.echo(f"wrote {len(rows)} particles to {out} "
+               f"({n_cal} photos used mesh-calibrated mm/px, rest used --mm-per-px {mm_per_px})")
 
 
 @app.command()

@@ -11,8 +11,10 @@ class Pipeline:
         self.segmenter = segmenter
         self.mm_per_px = mm_per_px
 
-    def run(self, image_bgr: np.ndarray, sample: SampleMetadata | None = None) -> dict:
+    def run(self, image_bgr: np.ndarray, sample: SampleMetadata | None = None,
+            mm_per_px: float | None = None) -> dict:
+        scale = self.mm_per_px if mm_per_px is None else mm_per_px
         detections = self.detector.predict(image_bgr)
         masks = self.segmenter.segment(image_bgr, detections)
-        records = assemble_records(image_bgr, detections, masks, self.mm_per_px, sample)
+        records = assemble_records(image_bgr, detections, masks, scale, sample)
         return {"count": len(detections), "detections": detections, "masks": masks, "records": records}
