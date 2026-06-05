@@ -60,6 +60,26 @@ référence few-shot). Sur **147 FP** : **109 (74 %) sont de VRAIES particules n
 - **Précision réelle du modèle ≈ 86 %** (240 vraies / 278 prédictions) vs 47 % « naïf » :
   l'annotation incomplète masquait la vraie précision.
 
+## Consolidation enrichie (quasi-certain, reproductible)
+
+Règle d'enrichissement reproductible : candidat = détection non appariée à la GT ; on **garde
+seulement conf ≥ 0.6** (haute confiance modèle = très probablement une particule réelle manquée),
+on **jette le reste (borderline)**. Corroboré par inspection vision (les fragments
+bleu/rose/jaune/teal des montages sont indubitablement du plastique).
+
+| image | GT | enrichi | +ajouts (quasi-certains) |
+|-------|----|---------|--------------------------|
+| 145851 | 279 | 314 | +35 (28 frag, 5 autre, 2 pellet) |
+| 153307 | 214 | 240 | +26 (17 frag, 9 autre) |
+| DT5A0150 | 199 | 225 | +26 (21 frag, 4 autre, 1 pellet) |
+| IMG_8891 | 155 | 177 | +22 (20 frag, 1 autre, 1 film) |
+| **total** | **847** | **956** | **+109** |
+
+Limite honnête : la règle conf≥0.6 est **biaisée vers `fragment`** (la classe que le modèle
+maîtrise) ; l'organique manqué se récupère via la passe vision plus permissive (à réviser).
+Tooling : `enrich_extract.py` + `enrich_consolidate.py`. Labels enrichis (`data/enrich/
+labels_enriched/`) + import LS (`ls_enrich.json`) prêts pour révision avant ré-entraînement.
+
 ## Conclusions
 
 1. **Le cœur scientifique (plastique vs organique) fonctionne : ~92 %.**

@@ -113,6 +113,12 @@ gap (foundation models *propose*, you *review* in Label Studio):
 
 On `TAMIS_B` this recovered **109 missed particles (74 % of the model's "false positives")**,
 revising the annotation 214 → 323 boxes and the model's real precision from 47 % to ~86 %.
+
+- **Quasi-certain enrichment (reproducible):** `enrich_extract.py` + `enrich_consolidate.py`
+  add only detector candidates with high confidence (conf ≥ 0.6) absent from the ground truth —
+  objectively likely-real missed particles, dropping borderline. Across 4 sieves this added 109
+  quasi-certain boxes (847 → 956). Writes enriched YOLO labels + a Label Studio import for review.
+
 Evaluation tooling: `eval_binary.py` (plastic vs organic), `view_consistency.py` (inter-view
 reproducibility). Full results: **[docs/RESULTS.md](docs/RESULTS.md)**.
 
