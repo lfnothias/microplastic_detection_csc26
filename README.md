@@ -36,7 +36,7 @@ and **colour**. It runs **locally on a Mac** (Apple Silicon / MPS) and is built 
 
 ```bash
 git lfs install
-git clone https://github.com/HolobiomicsLab/CorSeaCare_yolo.git
+git clone https://github.com/lfnothias/microplastic_detection_csc26.git
 cd CorSeaCare_yolo && git lfs pull          # fetch the sieve images (Git LFS)
 ./scripts/setup.sh                          # installs the engine (no torch) + Label Studio
 ```

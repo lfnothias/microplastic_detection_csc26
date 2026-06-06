@@ -31,9 +31,9 @@ dependencies = [
 dev = ["pytest>=8.0", "pytest-cov>=5.0", "matplotlib>=3.8"]
 
 [project.urls]
-Homepage = "https://github.com/HolobiomicsLab/CorSeaCare_yolo"
-Repository = "https://github.com/HolobiomicsLab/CorSeaCare_yolo"
-Issues = "https://github.com/HolobiomicsLab/CorSeaCare_yolo/issues"
+Homepage = "https://github.com/lfnothias/microplastic_detection_csc26"
+Repository = "https://github.com/lfnothias/microplastic_detection_csc26"
+Issues = "https://github.com/lfnothias/microplastic_detection_csc26/issues"
 
 # Real-model backends are intentionally NOT declared here: they pull in torch (~GB) and
 # SAM2 ships on GitHub under the package name `sam-2`. The Fake backends let the whole

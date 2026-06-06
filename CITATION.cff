@@ -13,7 +13,7 @@ authors:
 # Add yourself here when you contribute (name, optional affiliation/orcid).
 version: 0.1.0
 license: AGPL-3.0-or-later
-repository-code: "https://github.com/HolobiomicsLab/CorSeaCare_yolo"
+repository-code: "https://github.com/lfnothias/microplastic_detection_csc26"
 keywords:
   - marine litter
   - microplastics

@@ -31,7 +31,7 @@ The **images** (`data/corseacare/*.jpg`, `*.JPG`) and **annotations** (`annotati
 
 ```bash
 brew install git-lfs && git lfs install
-git clone https://github.com/HolobiomicsLab/CorSeaCare_yolo.git
+git clone https://github.com/lfnothias/microplastic_detection_csc26.git
 cd CorSeaCare_yolo && git lfs pull          # fetch the images
 ./scripts/setup.sh                          # engine + deps
 uv pip install "ultralytics>=8.3" "sam-2 @ git+https://github.com/facebookresearch/sam2.git"
