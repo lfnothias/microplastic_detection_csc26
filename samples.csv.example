@@ -1,0 +1,5 @@
+image,sample_id,split,sieve_mm,px_per_mm,date,location,gps,notes
+photo_001.jpg,SIEVE_A,train,1,,2026-06-01,,,one physical sieve = one sample_id
+photo_002.jpg,SIEVE_A,train,1,,2026-06-01,,,multiple views of the same sieve share its sample_id (no leakage)
+photo_003.jpg,SIEVE_B,val,2,,2026-06-01,,,"held-out sieve for evaluation: set split=val"
+photo_004.jpg,SIEVE_C,train,2,,2026-06-01,,,"sieve_mm = mesh size (1 or 2 mm); px_per_mm filled by calibrate_mesh.py"

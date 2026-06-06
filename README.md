@@ -58,13 +58,19 @@ without downloading any model.
 
 ## Annotate your own sieve photos
 
-Put photos in `data/corseacare/`, then (two terminals):
+Put photos in `data/corseacare/`, build the manifest, and start the annotation stack:
 ```bash
-uv run python scripts/serve_images.py     # image server  (http://localhost:8081)
-./scripts/launch_label_studio.sh          # Label Studio   (http://localhost:8080)
+uv run python scripts/make_manifest.py    # -> samples.csv (edit sample_id / sieve_mm / split; template: samples.csv.example)
+make annotate                             # image server (:8081) + Label Studio (:8080) together
 ```
-Pre-annotate, import into Label Studio, correct, **Submit**, then train on your Mac. Full
-walkthrough: **[docs/ANNOTATION_GUIDE.md](docs/ANNOTATION_GUIDE.md)**.
+Set up the Label Studio project — **automatically** (recommended):
+```bash
+export LABEL_STUDIO_API_KEY=<token>       # Label Studio -> Account & Settings -> Access Token
+make ls-project TASKS=data/corseacare_preann/ls_tasks.json   # project + 6-class config + import pre-annotations
+```
+…or manually: new project → Labeling Setup → paste `configs/label_studio_config.xml` → Import a tasks `.json`.
+Then correct the boxes, **Submit**, and train. Full walkthrough:
+**[docs/ANNOTATION_GUIDE.md](docs/ANNOTATION_GUIDE.md)**.
 
 Train from your annotations and run the model:
 ```bash
@@ -126,8 +132,9 @@ reproducibility). Full results: **[docs/RESULTS.md](docs/RESULTS.md)**.
 
 Your **photos, annotations, weights and datasets live under `data/` (and `runs/`) and are
 git-ignored** — they are *not* part of the public repository. Each user supplies their own
-images. `samples.csv` (which photo belongs to which physical sieve) is the only data-adjacent
-file that is tracked, and it contains filenames + sample IDs only.
+images. **`samples.csv`** (which photo belongs to which physical sieve) is **git-ignored** too —
+generate your own with `make manifest`; the tracked [`samples.csv.example`](samples.csv.example)
+shows the format.
 
 ## Repository layout
 
@@ -138,7 +145,7 @@ app/server.py     Streamlit app (single image + batch, overlays, CSV export)
 configs/          class list + Label Studio labeling config
 docs/             ANNOTATION_GUIDE.md and notes
 tests/            unit tests (run with `uv run pytest`)
-samples.csv       photo -> sample_id (sieve) manifest
+samples.csv.example  template for the photo -> sample_id manifest (your samples.csv is git-ignored)
 ```
 
 ## Limitations

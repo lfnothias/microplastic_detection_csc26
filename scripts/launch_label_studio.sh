@@ -1,16 +1,18 @@
 #!/usr/bin/env bash
-# Launch Label Studio for CorSeaCare annotation, with local image serving enabled
-# so data/corseacare/*.JPG load via /data/local-files/?d=corseacare/<name>.
+# Launch Label Studio for CorSeaCare annotation.
+# Images are served separately by scripts/serve_images.py (HTTP+CORS at :8081) and referenced
+# by plain http:// URLs in the task files — so NO local-files config is needed.
+# Tip: `make annotate` starts the image server AND Label Studio together.
 set -euo pipefail
-REPO="$(cd "$(dirname "$0")/.." && pwd)"
-export LABEL_STUDIO_LOCAL_FILES_SERVING_ENABLED=true
-export LABEL_STUDIO_LOCAL_FILES_DOCUMENT_ROOT="$REPO/data"
-# Reduce startup network chatter (boat connection): no analytics, no error reporting.
-export COLLECT_ANALYTICS=false
+export COLLECT_ANALYTICS=false          # quiet startup (no analytics / error reporting)
 export LABEL_STUDIO_SENTRY_DSN=""
-echo "Local files document root: $LABEL_STUDIO_LOCAL_FILES_DOCUMENT_ROOT"
-echo "After it starts (http://localhost:8080):"
-echo "  1. Create project 'corseacare'"
-echo "  2. Labeling Setup -> Custom template -> paste configs/label_studio_config.xml"
-echo "  3. Import data/corseacare_preann/ls_tasks.json (candidate boxes appear as predictions)"
-exec "$HOME/.local/bin/label-studio" start
+
+echo "Label Studio -> http://localhost:8080"
+echo "Make sure the image server is running too:  make serve   (http://localhost:8081)"
+echo
+echo "Set up the project (once):"
+echo "  automatic:  export LABEL_STUDIO_API_KEY=<token from Account & Settings>"
+echo "              make ls-project        # creates project + 6-class config (+ TASKS=<file> to import)"
+echo "  manual:     new project -> Labeling Setup -> Custom template ->"
+echo "              paste configs/label_studio_config.xml, then Import a tasks .json"
+exec "$(command -v label-studio || echo "$HOME/.local/bin/label-studio")" start
