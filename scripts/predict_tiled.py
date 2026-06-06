@@ -17,8 +17,9 @@ from corseacare.sieve import detect_sieve_circle, keep_inside_circle
 ROOT = Path(__file__).resolve().parents[1]
 IMAGES = ROOT / "data" / "corseacare"
 OUT = ROOT / "data" / "corseacare_pred_tiled"
-TILE, OVERLAP = 640, 0.3
-ROI_MARGIN = 0.98     # keep detections within 98% of the sieve radius
+TILE, OVERLAP = 640, 0.5
+ROI_MARGIN = 1.0      # keep detections up to the sieve rim (drops rim/tray FPs beyond it)
+MAX_BOX_FRAC = 0.04   # drop boxes larger than 4% of the image (oversized FPs / plaques)
 COLORS = [(0, 0, 255), (0, 255, 0), (255, 0, 0), (0, 165, 255), (255, 0, 255), (160, 160, 160)]
 
 
@@ -47,6 +48,8 @@ def main(weights, conf):
         circle = detect_sieve_circle(img)              # gate out rim / table / tool false positives
         n_raw = len(merged)
         merged = keep_inside_circle(merged, circle, margin=ROI_MARGIN)
+        amax = H * W * MAX_BOX_FRAC
+        merged = [d for d in merged if (d[4] - d[2]) * (d[5] - d[3]) <= amax]
         ov = img.copy()
         cx, cy, r = (int(v) for v in circle)
         cv2.circle(ov, (cx, cy), r, (0, 255, 255), 2)  # show the ROI we kept

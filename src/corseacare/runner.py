@@ -19,7 +19,8 @@ def build_pipeline(cfg: Config, mm_per_px: float, tiled: bool = False) -> Pipeli
     else:
         if tiled:
             det = TiledDetector(cfg.weights, cfg.classes, cfg.conf_threshold,
-                                cfg.tile_size, cfg.tile_overlap, roi_gate=cfg.roi_gate)
+                                cfg.tile_size, cfg.tile_overlap, roi_gate=cfg.roi_gate,
+                                roi_margin=cfg.roi_margin, max_box_frac=cfg.max_box_frac)
         else:
             det = UltralyticsDetector(cfg.weights, cfg.classes, cfg.conf_threshold)
         seg = SAM2Segmenter(cfg.sam2_checkpoint, cfg.sam2_model_cfg)
