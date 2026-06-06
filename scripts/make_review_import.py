@@ -62,9 +62,9 @@ def main(thr):
     print(f"{len(tasks)} tâches -> {D / 'ls_review.json'}")
     for t in tasks:
         im = t["data"]["image"].rsplit("/", 1)[-1]
-        ng = len(t["predictions"][0]["result"])
-        na = len(t["predictions"][1]["result"])
-        print(f"  {im}: {ng} GT + {na} ajouts à réviser")
+        na = len(add.get(im, []))
+        tot = len(t["predictions"][0]["result"])
+        print(f"  {im}: {tot} boîtes pré-tracées (dont {na} ajouts quasi-certains)")
 
 
 if __name__ == "__main__":
