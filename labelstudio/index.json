@@ -1,0 +1,44 @@
+[
+  {
+    "file": "03_CorSeaCare.json",
+    "title": "CorSeaCare",
+    "tasks": 11,
+    "predictions": 7,
+    "annotations": 11
+  },
+  {
+    "file": "04_CorSeaCare_preannot_verif.json",
+    "title": "CorSeaCare_preannot_verif",
+    "tasks": 4,
+    "predictions": 4,
+    "annotations": 4
+  },
+  {
+    "file": "05_csc_260606_1.json",
+    "title": "csc_260606_1",
+    "tasks": 27,
+    "predictions": 27,
+    "annotations": 0
+  },
+  {
+    "file": "08_csc_260606_2.json",
+    "title": "csc_260606_2",
+    "tasks": 21,
+    "predictions": 21,
+    "annotations": 0
+  },
+  {
+    "file": "09_csc_260606_3.json",
+    "title": "csc_260606_3",
+    "tasks": 21,
+    "predictions": 21,
+    "annotations": 0
+  },
+  {
+    "file": "10_csc_260606_4.json",
+    "title": "csc_260606_4",
+    "tasks": 21,
+    "predictions": 21,
+    "annotations": 1
+  }
+]

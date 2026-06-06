@@ -1,6 +1,6 @@
 # CorSeaCare_yolo — common tasks. Run `make help` for the list.
 .DEFAULT_GOAL := help
-.PHONY: help setup test demo manifest calibrate serve label-studio annotate ls-project clean
+.PHONY: help setup test demo manifest calibrate serve label-studio annotate ls-project ls-export ls-restore clean
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
@@ -33,6 +33,12 @@ annotate: ## Start image server + Label Studio together (full annotation stack)
 
 ls-project: ## Create the LS project via API (needs LABEL_STUDIO_API_KEY; TASKS=<file> to import)
 	uv run python scripts/ls_create_project.py $(if $(TASKS),--tasks $(TASKS),)
+
+ls-export: ## Snapshot all Label Studio projects -> labelstudio/*.json (reads local LS DB)
+	uv run python scripts/export_label_studio.py
+
+ls-restore: ## Recreate the LS projects from labelstudio/*.json (needs LABEL_STUDIO_API_KEY + make annotate)
+	uv run python scripts/restore_label_studio.py
 
 clean: ## Remove caches and pipeline outputs (keeps your data/ photos & annotations)
 	rm -rf .pytest_cache **/__pycache__ data/ls_export_yolo data/*_pred_tiled data/*_tiles

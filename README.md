@@ -74,6 +74,15 @@ make ls-project TASKS=data/corseacare_preann/ls_tasks.json   # project + 6-class
 Then correct the boxes, **Submit**, and train. Full walkthrough:
 **[docs/ANNOTATION_GUIDE.md](docs/ANNOTATION_GUIDE.md)**.
 
+**Reproduce the annotation projects.** The Label Studio projects themselves ship as portable JSON
+snapshots in **[`labelstudio/`](labelstudio/)** (labeling config + tasks + predictions + expert
+annotations; no secrets). Recreate them on any machine:
+```bash
+make annotate                       # Label Studio (:8080) + image server (:8081)
+export LABEL_STUDIO_API_KEY=<token>
+make ls-restore                     # recreate every project; re-export later with `make ls-export`
+```
+
 Train and run the model. **To reproduce on the shipped dataset** (no Label Studio needed) start
 with `build_yolo_dataset.py`; if you annotated your *own* photos, use `export_from_ls.py` instead:
 ```bash
