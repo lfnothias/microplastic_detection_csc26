@@ -52,10 +52,10 @@ class TiledDetector:
     """
     def __init__(self, weights: str = "", class_names: list[str] | None = None, conf: float = 0.25,
                  tile: int = 640, overlap: float = 0.3, iou: float = 0.5, roi_gate: bool = True,
-                 roi_margin: float = 0.98, detect_tile=None):
+                 roi_margin: float = 0.98, max_box_frac: float | None = None, detect_tile=None):
         self._names = class_names or []
         self._conf, self._tile, self._overlap, self._iou = conf, tile, overlap, iou
-        self._roi_gate, self._roi_margin = roi_gate, roi_margin
+        self._roi_gate, self._roi_margin, self._max_box_frac = roi_gate, roi_margin, max_box_frac
         if detect_tile is not None:
             self._detect_tile = detect_tile            # injected (tests / custom backends)
         else:
@@ -72,6 +72,9 @@ class TiledDetector:
         merged = tiled_detect(image_bgr, self._detect_tile, self._tile, self._overlap, self._iou)
         if self._roi_gate:
             merged = keep_inside_circle(merged, detect_sieve_circle(image_bgr), margin=self._roi_margin)
+        if self._max_box_frac:                       # drop implausibly large boxes (plaques / reflections)
+            amax = image_bgr.shape[0] * image_bgr.shape[1] * self._max_box_frac
+            merged = [d for d in merged if (d[4] - d[2]) * (d[5] - d[3]) <= amax]
         out = []
         for (cls, conf, x1, y1, x2, y2) in merged:
             name = self._names[cls] if 0 <= cls < len(self._names) else str(cls)

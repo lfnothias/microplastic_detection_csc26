@@ -20,12 +20,15 @@ def detect_sieve_circle(img_bgr, fallback_frac=0.42):
     small = cv2.resize(img_bgr, (max(1, int(w * ds)), max(1, int(h * ds))))
     sh, sw = small.shape[:2]
     gray = cv2.medianBlur(cv2.cvtColor(small, cv2.COLOR_BGR2GRAY), 5)
-    circles = cv2.HoughCircles(gray, cv2.HOUGH_GRADIENT, dp=1.2, minDist=sh, param1=100,
-                               param2=40, minRadius=int(0.22 * min(sh, sw)),
-                               maxRadius=int(0.50 * min(sh, sw)))
-    if circles is not None:
-        cx, cy, r = (np.around(circles[0][0]).astype(float) / ds)
-        return float(cx), float(cy), float(r)
+    # Try decreasing accumulator strictness so off-centre / varied-contrast sieves are still found
+    # (a wrong centred fallback is what lets out-of-sieve boxes through).
+    for p2 in (60, 45, 32, 24):
+        circles = cv2.HoughCircles(gray, cv2.HOUGH_GRADIENT, dp=1.2, minDist=sh, param1=100,
+                                   param2=p2, minRadius=int(0.20 * min(sh, sw)),
+                                   maxRadius=int(0.55 * min(sh, sw)))
+        if circles is not None:
+            cx, cy, r = (np.around(circles[0][0]).astype(float) / ds)
+            return float(cx), float(cy), float(r)
     return w / 2.0, h / 2.0, fallback_frac * min(h, w)
 
 
