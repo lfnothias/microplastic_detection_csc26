@@ -9,7 +9,8 @@ and splits each predicted box by confidence:
 Also writes per-image overlays (sure = green, uncertain = orange) and a summary.
 
     .venv/bin/python scripts/confidence_split.py [counts.csv] [--high 0.6] [--low 0.25]
-Output: data/active/{sure/<stem>.txt, ls_review.json, overlays/<img>, summary.csv, hist.txt}
+Output: data/active/{ls_sure.json (verify), ls_borderline.json (correct), sure/<stem>.txt,
+                     overlays/<img>, summary.csv, hist.txt}
 """
 import sys
 import csv
@@ -25,6 +26,13 @@ OUT = ROOT / "data" / "active"
 CLASSES = ["fragment", "fibre", "film", "mousse", "pellet", "autre"]
 LS_BASE = "http://localhost:8081/corseacare/"
 SURE_C, UNC_C = (0, 200, 0), (0, 140, 255)   # green / orange (BGR)
+
+
+def _rect(cls, x1, y1, x2, y2, W, H):
+    return {"type": "rectanglelabels", "from_name": "label", "to_name": "image",
+            "original_width": W, "original_height": H, "image_rotation": 0,
+            "value": {"x": x1 / W * 100, "y": y1 / H * 100, "width": (x2 - x1) / W * 100,
+                      "height": (y2 - y1) / H * 100, "rotation": 0, "rectanglelabels": [cls]}}
 
 
 def main(counts, high, low):
@@ -45,7 +53,7 @@ def main(counts, high, low):
 
     for sub in ("sure", "overlays"):
         (OUT / sub).mkdir(parents=True, exist_ok=True)
-    tasks, summ = [], []
+    sure_tasks, bord_tasks, summ = [], [], []
     tot_sure = tot_unc = 0
     for im in sorted(dets):
         img = cv2.imread(str(IMAGES / im))
@@ -55,21 +63,20 @@ def main(counts, high, low):
         unc = [(cls, c, b) for cls, c, b in dets[im] if c < high]
         tot_sure += len(sure); tot_unc += len(unc)
 
-        # SURE -> YOLO pseudo-labels, kept aside
-        lines = []
+        # SURE -> YOLO pseudo-labels (backup) + a Label Studio file to VERIFY
+        lines, sure_res = [], []
         for cls, (x1, y1, x2, y2) in sure:
             cx, cy = (x1 + x2) / 2 / W, (y1 + y2) / 2 / H
             lines.append(f"{CLASSES.index(cls)} {cx:.6f} {cy:.6f} {(x2 - x1) / W:.6f} {(y2 - y1) / H:.6f}")
+            sure_res.append(_rect(cls, x1, y1, x2, y2, W, H))
         (OUT / "sure" / f"{stem}.txt").write_text("\n".join(lines))
+        sure_tasks.append({"data": {"image": LS_BASE + im},
+                           "predictions": [{"model_version": "sure-pseudolabel", "result": sure_res}]})
 
-        # UNCERTAIN -> Label Studio review with pseudo-label
-        res = [{"type": "rectanglelabels", "from_name": "label", "to_name": "image",
-                "original_width": W, "original_height": H, "image_rotation": 0,
-                "value": {"x": x1 / W * 100, "y": y1 / H * 100, "width": (x2 - x1) / W * 100,
-                          "height": (y2 - y1) / H * 100, "rotation": 0, "rectanglelabels": [cls]}}
-               for cls, c, (x1, y1, x2, y2) in unc]
-        tasks.append({"data": {"image": LS_BASE + im},
-                      "predictions": [{"model_version": "uncertain-pseudolabel", "result": res}]})
+        # UNCERTAIN (borderline) -> Label Studio file to CORRECT
+        unc_res = [_rect(cls, x1, y1, x2, y2, W, H) for cls, c, (x1, y1, x2, y2) in unc]
+        bord_tasks.append({"data": {"image": LS_BASE + im},
+                           "predictions": [{"model_version": "borderline-pseudolabel", "result": unc_res}]})
 
         # overlay: sure green, uncertain orange
         ov = img.copy()
@@ -83,7 +90,8 @@ def main(counts, high, low):
         sc = Counter(cls for cls, _ in sure); uc = Counter(cls for cls, _, _ in unc)
         summ.append((im, len(sure), len(unc), dict(sc), dict(uc)))
 
-    (OUT / "ls_review.json").write_text(json.dumps(tasks, indent=2))
+    (OUT / "ls_sure.json").write_text(json.dumps(sure_tasks, indent=2))
+    (OUT / "ls_borderline.json").write_text(json.dumps(bord_tasks, indent=2))
     with open(OUT / "summary.csv", "w", newline="") as f:
         w = csv.writer(f); w.writerow(["image", "n_sure", "n_uncertain", "sure_by_class", "uncertain_by_class"])
         for im, ns, nu, sc, uc in summ:
@@ -96,7 +104,8 @@ def main(counts, high, low):
     print(f"{len(dets)} photos non annotées | conf>=high({high}) -> {tot_sure} SÛRES (gardées de côté) | "
           f"low({low})<=conf<high -> {tot_unc} INCERTAINES (à réviser dans Label Studio)")
     print("histogramme de confiance:", hist)
-    print(f"-> data/active/ : sure/ (pseudo-labels auto), ls_review.json (révision), overlays/, summary.csv")
+    print("-> data/active/ : ls_sure.json (à VÉRIFIER), ls_borderline.json (à CORRIGER), "
+          "sure/ (YOLO backup), overlays/, summary.csv")
 
 
 if __name__ == "__main__":
