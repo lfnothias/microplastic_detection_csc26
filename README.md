@@ -132,6 +132,16 @@ revising the annotation 214 → 323 boxes and the model's real precision from 47
 Evaluation tooling: `eval_binary.py` (plastic vs organic), `view_consistency.py` (inter-view
 reproducibility). Full results: **[docs/RESULTS.md](docs/RESULTS.md)**.
 
+## Pretrained weights
+
+Trained YOLO11n detectors ship via Git LFS in **[`models/`](models/)** — use them for inference
+without retraining:
+```bash
+git lfs pull
+PYTORCH_ENABLE_MPS_FALLBACK=1 uv run python scripts/predict_tiled.py models/corseacare_tiles_v7.pt 0.12
+```
+`corseacare_tiles_v7.pt` is the recommended model; see [models/README.md](models/README.md).
+
 ## Dataset & privacy
 
 The **sieve photos and annotations are published** (CC0) so results are reproducible:

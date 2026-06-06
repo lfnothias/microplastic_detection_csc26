@@ -38,3 +38,7 @@ docs/superpowers/
 /report.json
 /report_by_sample.csv
 /overlay.png
+
+# published model weights (LFS)
+!models/
+!models/*.pt
