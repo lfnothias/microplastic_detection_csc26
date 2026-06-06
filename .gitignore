@@ -30,3 +30,9 @@ docs/superpowers/
 
 # private per-sample manifest (generate your own with make_manifest.py; see samples.csv.example)
 samples.csv
+
+# CLI outputs (root)
+/counts.csv
+/report.json
+/report_by_sample.csv
+/overlay.png
