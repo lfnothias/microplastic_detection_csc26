@@ -31,12 +31,14 @@ and **colour**. It runs **locally on a Mac** (Apple Silicon / MPS) and is built 
 
 ## Install (macOS, Apple Silicon)
 
-**Prerequisites:** [`uv`](https://docs.astral.sh/uv/) (`brew install uv`), `git`.
+**Prerequisites:** [`uv`](https://docs.astral.sh/uv/) (`brew install uv`), `git`, and
+[`git-lfs`](https://git-lfs.com) (`brew install git-lfs`) for the dataset images.
 
 ```bash
+git lfs install
 git clone https://github.com/HolobiomicsLab/CorSeaCare_yolo.git
-cd CorSeaCare_yolo
-./scripts/setup.sh          # installs the engine (no torch) + Label Studio
+cd CorSeaCare_yolo && git lfs pull          # fetch the sieve images (Git LFS)
+./scripts/setup.sh                          # installs the engine (no torch) + Label Studio
 ```
 `setup.sh` runs `uv sync --extra dev` (provisions Python 3.12, installs the light engine) and
 `uv tool install label-studio`. To **run/train the real models** (pulls in PyTorch, ~GB — do
@@ -72,9 +74,11 @@ make ls-project TASKS=data/corseacare_preann/ls_tasks.json   # project + 6-class
 Then correct the boxes, **Submit**, and train. Full walkthrough:
 **[docs/ANNOTATION_GUIDE.md](docs/ANNOTATION_GUIDE.md)**.
 
-Train from your annotations and run the model:
+Train and run the model. **To reproduce on the shipped dataset** (no Label Studio needed) start
+with `build_yolo_dataset.py`; if you annotated your *own* photos, use `export_from_ls.py` instead:
 ```bash
-uv run python scripts/export_from_ls.py   # Label Studio -> YOLO dataset (split by sample)
+uv run python scripts/build_yolo_dataset.py  # shipped images + annotations -> YOLO dataset (reproduce)
+# (or from your own Label Studio project:)   uv run python scripts/export_from_ls.py
 uv run python scripts/tile_dataset.py     # slice into tiles
 uv run python scripts/train_tiles.py      # train YOLO11n on the tiles (MPS, early-stops)
 uv run python scripts/predict_tiled.py    # tiled inference (sieve-ROI gated) -> overlays + counts
@@ -128,13 +132,17 @@ revising the annotation 214 → 323 boxes and the model's real precision from 47
 Evaluation tooling: `eval_binary.py` (plastic vs organic), `view_consistency.py` (inter-view
 reproducibility). Full results: **[docs/RESULTS.md](docs/RESULTS.md)**.
 
-## Data & privacy
+## Dataset & privacy
 
-Your **photos, annotations, weights and datasets live under `data/` (and `runs/`) and are
-git-ignored** — they are *not* part of the public repository. Each user supplies their own
-images. **`samples.csv`** (which photo belongs to which physical sieve) is **git-ignored** too —
-generate your own with `make manifest`; the tracked [`samples.csv.example`](samples.csv.example)
-shows the format.
+The **sieve photos and annotations are published** (CC0) so results are reproducible:
+`data/corseacare/*.jpg,*.JPG` (via **Git LFS**), `annotations/*.txt`, and `samples.csv` — see
+**[DATASET.md](DATASET.md)**. Rebuild the YOLO dataset from them with
+`scripts/build_yolo_dataset.py` (no Label Studio needed).
+
+**Working artifacts stay git-ignored**: model runs (`data/runs/`, `runs/`), RAW originals
+(`data/raw_dng/`), tiles, montages and other derived files. To work on your own photos, drop
+them in `data/corseacare/` and regenerate `samples.csv` with `make manifest` (template:
+[`samples.csv.example`](samples.csv.example)).
 
 ## Repository layout
 
@@ -167,7 +175,8 @@ Citizen-science contributions (photos, annotations, code) welcome — see
 
 ## License & credits
 
-**AGPL-3.0** (see [LICENSE](LICENSE)). Built on: Ultralytics YOLO (AGPL-3.0), SAM 2
+**Code: AGPL-3.0** (see [LICENSE](LICENSE)). **Dataset (images + annotations): CC0** — see
+[DATASET.md](DATASET.md). Built on: Ultralytics YOLO (AGPL-3.0), SAM 2
 (Apache-2.0), DINOv2 (Apache-2.0), Label Studio (Apache-2.0), OpenCV, scikit-image,
 scikit-learn. See [NOTICE.md](NOTICE.md). Part of the CorSeaCare mission (Mare Vivu; partners
 CNRS / Ifremer / Sorbonne Université).
