@@ -26,33 +26,42 @@ ROOT = Path(__file__).resolve().parents[1]
 SNAP = ROOT / "labelstudio"
 
 
-# LS >= 1.23 disables legacy "Token <key>" auth by default; newer personal access tokens use
-# "Bearer <jwt>". Try legacy first, fall back to Bearer on 401 so either token type works.
-_AUTH_SCHEMES = ["Token", "Bearer"]
+def _auth_header(token, base):
+    """Resolve the Authorization header for either token type.
 
-
-def _api(method, path, token, base, payload=None):
-    url = base.rstrip("/") + path
-    data = json.dumps(payload).encode() if payload is not None else None
-    last = None
-    for scheme in _AUTH_SCHEMES:
-        req = urllib.request.Request(url, data=data, method=method)
-        req.add_header("Authorization", f"{scheme} {token}")
+    LS >= 1.23 Personal Access Tokens are JWT *refresh* tokens: exchange them at
+    /api/token/refresh for a short-lived access JWT used as `Bearer <access>`. Legacy
+    "Access Tokens" are opaque and used directly as `Token <key>`.
+    """
+    if token.count(".") == 2:  # looks like a JWT -> exchange refresh for access
+        req = urllib.request.Request(
+            base.rstrip("/") + "/api/token/refresh",
+            data=json.dumps({"refresh": token}).encode(), method="POST")
         req.add_header("Content-Type", "application/json")
         try:
             with urllib.request.urlopen(req) as r:
-                body = r.read().decode()
-                return json.loads(body) if body else {}
-        except urllib.error.HTTPError as e:
-            last = (e.code, e.read().decode()[:300])
-            if e.code in (401, 403):
-                continue  # wrong scheme — try the next one
-            break
-    code, detail = last or ("?", "")
-    hint = ("\nHint: on Label Studio >= 1.23 the legacy 'Access Token' is disabled — create a "
-            "Personal Access Token (Account & Settings -> Personal Access Token) and export it as "
-            "LABEL_STUDIO_API_KEY, or re-enable legacy tokens in Organization settings.") if code in (401, 403) else ""
-    raise SystemExit(f"API {method} {path} failed ({code}): {detail}{hint}")
+                access = json.loads(r.read().decode())["access"]
+            return f"Bearer {access}"
+        except (urllib.error.HTTPError, KeyError) as e:
+            raise SystemExit(f"Could not exchange the JWT token at /api/token/refresh: {e}")
+    return f"Token {token}"  # legacy opaque access token
+
+
+def _api(method, path, auth, base, payload=None):
+    url = base.rstrip("/") + path
+    data = json.dumps(payload).encode() if payload is not None else None
+    req = urllib.request.Request(url, data=data, method=method)
+    req.add_header("Authorization", auth)
+    req.add_header("Content-Type", "application/json")
+    try:
+        with urllib.request.urlopen(req) as r:
+            body = r.read().decode()
+            return json.loads(body) if body else {}
+    except urllib.error.HTTPError as e:
+        detail = e.read().decode()[:300]
+        hint = ("\nHint: on Label Studio >= 1.23 use a Personal Access Token (Account & Settings -> "
+                "Personal Access Token) exported as LABEL_STUDIO_API_KEY.") if e.code in (401, 403) else ""
+        raise SystemExit(f"API {method} {path} failed ({e.code}): {detail}{hint}")
 
 
 def main():
@@ -64,15 +73,16 @@ def main():
 
     token = os.environ.get("LABEL_STUDIO_API_KEY")
     if not token:
-        sys.exit("Set LABEL_STUDIO_API_KEY (LS -> Account & Settings -> Access Token).")
+        sys.exit("Set LABEL_STUDIO_API_KEY (LS -> Account & Settings -> Personal Access Token).")
     base = os.environ.get("LABEL_STUDIO_URL", "http://localhost:8080")
+    auth = _auth_header(token, base)
 
     index_path = SNAP / "index.json"
     files = ([SNAP / e["file"] for e in json.loads(index_path.read_text())]
              if index_path.exists() else sorted(SNAP.glob("*.json")))
     files = [f for f in files if f.name != "index.json"]
 
-    existing = {p["title"] for p in _api("GET", "/api/projects?page_size=1000", token, base).get("results", [])}
+    existing = {p["title"] for p in _api("GET", "/api/projects?page_size=1000", auth, base).get("results", [])}
 
     for f in files:
         snap = json.loads(f.read_text())
@@ -82,12 +92,12 @@ def main():
         if args.skip_existing and title in existing:
             print(f"  skip (exists): {title}")
             continue
-        proj = _api("POST", "/api/projects", token, base,
+        proj = _api("POST", "/api/projects", auth, base,
                     {"title": title, "label_config": snap["label_config"]})
         pid = proj["id"]
         tasks = snap["tasks"]
         # LS import accepts the task list with embedded predictions + annotations.
-        _api("POST", f"/api/projects/{pid}/import", token, base, tasks)
+        _api("POST", f"/api/projects/{pid}/import", auth, base, tasks)
         n_pred = sum(len(t.get("predictions", [])) for t in tasks)
         n_ann = sum(len(t.get("annotations", [])) for t in tasks)
         print(f"  restored '{title}' (id {pid}): {len(tasks)} tasks, {n_pred} predictions, {n_ann} annotations")
