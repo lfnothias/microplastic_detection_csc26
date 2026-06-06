@@ -54,10 +54,10 @@ def main(thr):
             gt_results.append(rect((cx - w / 2) * W, (cy - h / 2) * H,
                                    (cx + w / 2) * W, (cy + h / 2) * H, CLASSES[c], W, H))
         add_results = [rect(x1, y1, x2, y2, cls, W, H) for (x1, y1, x2, y2), cls in add.get(im, [])]
-        tasks.append({"data": {"image": LS_BASE + im}, "predictions": [
-            {"model_version": "existing_GT", "result": gt_results},
-            {"model_version": "vision_added", "result": add_results},
-        ]})
+        # single prediction layer = all boxes pre-drawn (your GT + the recovered missed particles)
+        tasks.append({"data": {"image": LS_BASE + im},
+                      "predictions": [{"model_version": "GT+ajouts",
+                                       "result": gt_results + add_results}]})
     (D / "ls_review.json").write_text(json.dumps(tasks, indent=2))
     print(f"{len(tasks)} tâches -> {D / 'ls_review.json'}")
     for t in tasks:
