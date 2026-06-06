@@ -49,18 +49,23 @@ def main():
     for tid, data in cur.execute("SELECT id, data FROM task"):
         d = json.loads(data) if isinstance(data, str) else data
         tid2name[tid] = d.get("image", "").rsplit("/", 1)[-1]
-    # submitted annotations first, then latest draft
-    results = {}
+    # Dedupe by IMAGE, keeping the most recently submitted annotation. This handles re-annotation
+    # in a NEW project: the enriched submission (newer updated_at) wins over the original GT task,
+    # even though they are different task_ids for the same image. Submitted (task_completion)
+    # always beats drafts.
+    best = {}   # image name -> regions (latest submitted)
     for tid, res in cur.execute("SELECT task_id, result FROM task_completion ORDER BY updated_at"):
-        results[tid] = json.loads(res) if isinstance(res, str) else res
+        name = tid2name.get(tid)
+        if name:
+            best[name] = json.loads(res) if isinstance(res, str) else res   # ASC -> newest overwrites
     for tid, res in cur.execute("SELECT task_id, result FROM tasks_annotationdraft ORDER BY updated_at"):
-        results.setdefault(tid, json.loads(res) if isinstance(res, str) else res)
+        name = tid2name.get(tid)
+        if name:
+            best.setdefault(name, json.loads(res) if isinstance(res, str) else res)
 
     items = []
-    for tid, regions in results.items():
-        name = tid2name.get(tid)
-        if not name or not (IMAGES / name).exists():
-            print(f"skip task {tid}: image missing ({name})")
+    for name, regions in best.items():
+        if not (IMAGES / name).exists():
             continue
         items.append((name, _regions_to_lines(regions)))
     items.sort()
